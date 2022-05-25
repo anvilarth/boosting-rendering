@@ -7,6 +7,11 @@ bin-release/
 # Other files and folders
 .settings/
 
+/wandb
+/.ipynb_checkpoints
+/__pycache__
+/data
+
 # Executables
 *.swf
 *.air
