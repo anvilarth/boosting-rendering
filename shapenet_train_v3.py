@@ -18,7 +18,7 @@ from models.rendering import get_rays_shapenet, sample_points, volume_render
 from torchvision.utils import make_grid
 
 
-os.environ['WANDB_API_KEY'] = 'a1b614b88435b9e3c81521ecb21a632594c4eacd'
+os.environ['WANDB_API_KEY'] = <WANDB_ID>
 
 def inner_loop(model, optim, imgs, poses, hwf, bound, num_samples, raybatch_size, inner_steps):
     """

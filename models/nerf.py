@@ -50,9 +50,7 @@ class SimpleNeRF(nn.Module):
         super().__init__()
 
         self.net = []
-        self.net.append(PositionalEncoding(max_freq, num_freqs))
-        self.net.append(nn.Linear(2*num_freqs*in_features, hidden_features))
-        self.net.append(nn.ReLU())
+        self.prep = nn.Sequential(PositionalEncoding(max_freq, num_freqs), nn.Linear(2*num_freqs*in_features, hidden_features), nn.ReLU())
     
         for i in range(hidden_layers-1):
             self.net.append(nn.Linear(hidden_features, hidden_features))
@@ -61,7 +59,9 @@ class SimpleNeRF(nn.Module):
         self.net.append(nn.Linear(hidden_features, out_features))
         self.net = nn.Sequential(*self.net)
 
-    def forward(self, x):
+        self.encoder = nn.Linear(512, hidden_features)
+
+    def forward(self, x, features=None):
         """
         At each input xyz point return the rgb and sigma values.
         Input:
@@ -70,7 +70,13 @@ class SimpleNeRF(nn.Module):
             rgb: (num_rays, num_samples, 3)
             sigma: (num_rays, num_samples)
         """
-        out = self.net(x)
+        interm = self.prep(x)
+
+        if features is not None:
+            features_map = self.encoder(features)
+            interm = interm + features_map.unsqueeze(1).repeat(1, interm.shape[1], 1)
+        
+        out = self.net(interm)
         rgb = torch.sigmoid(out[..., :-1])
         sigma = F.softplus(out[..., -1])
         return rgb, sigma

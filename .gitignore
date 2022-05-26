@@ -9,7 +9,11 @@ bin-release/
 
 /wandb
 /.ipynb_checkpoints
-/__pycache__
+*/__pycache__
+/video
+/videos
+__pycache__
+
 /data
 
 # Executables
